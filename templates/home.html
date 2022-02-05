@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}"/>
+{% endblock %}
+{% block content %}
+    <div class="container" id="home">
+        <h1>Admin Panel</h1>
+        <h3>Send Pop-Up</h3>
+        <!-- <form class="form-signin mb-4" action="/popup" method="post"> -->
+        <div class="form-signin mb-4">
+            <input class="form-control mb-1" name="title" type="text" placeholder="Title" id="popup-title"/>
+            <textarea name="popup-text" class="col-12 form-control mb-2" placeholder="Popup Text"
+                      id="popup-text"></textarea>
+            <select class="form-select mb-1" name="style-popup" id="popup-style">
+                <option selected value="16">Stop-sign icon</option>
+                <option value="32">Question-mark icon</option>
+                <option value="48">Exclamation-point icon</option>
+                <option value="64">Information-sign icon consisting of an 'i' in a circle</option>
+            </select>
+            <button type="submit" class="btn btn-primary" id="popup-submit">Send</button>
+        </div>
+        <div>
+            <textarea name="popup-text" class="col-12 form-control mb-2" placeholder="Enter Command"
+                      id="cmd-commands"></textarea>
+            <textarea disabled class="col-12 form-control mb-2" id="cmd-output" placeholder="Output"
+                      style="overflow: auto"></textarea>
+            <button class="btn btn-primary btn-warning" id="cmd-submit">Execute</button>
+        </div>
+        <button class="btn btn-danger mt-5" id="lock-pc">Lock PC</button>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $("#cmd-submit").click(() => {
+            $.ajax({
+                url: `/execute/${$("#cmd-commands").val()}`,
+                type: 'GET',
+                success: (data) => {
+                    let output = '';
+                    if (data['output'] && data['error']) {
+                        output = data['output'] + '\n' + data['error'];
+                    } else if (data['output']) {
+                        output = data['output'];
+                    } else if (data['error']) {
+                        output = data['error'];
+                    }
+                    $("#cmd-output").val(output);
+                    $("#cmd-output").height($("#cmd-output").scrollHeight);
+                    toastr.success('Command Success', 'The command has been successfully executed.')
+                },
+                error: (xhr, status, error) => {
+                    toastr.error(error, 'Error executing command.');
+                }
+            });
+        });
+        $("#lock-pc").click(() => {
+            $.ajax({
+                url: '/lock',
+                type: 'POST',
+                success: () => {
+                    toastr.success('Locked PC', 'The PC has successfully been locked.')
+                },
+                error: (xhr, status, error) => {
+                    toastr.error(error, 'Error sending pop-up');
+                }
+            });
+        });
+        $("#popup-submit").click(() => {
+            $.ajax({
+                url: '/popup',
+                type: 'POST',
+                data: {
+                    "text": $("#popup-text").val(),
+                    "title": $("#popup-title").val(),
+                    "style": $("#popup-style").val()
+                },
+                success: () => {
+                    toastr.success('The popup has been successfully displayed.', 'Display Pop-Up');
+                },
+                error: (xhr, status, error) => {
+                    toastr.error(error, 'Error Sending Pop-Up');
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

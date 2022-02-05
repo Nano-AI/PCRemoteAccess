@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap-utilities.min.css') }}"/>
+    <link href="{{ url_for('static', filename='toastr/toastr.min.css') }}" rel="stylesheet"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block css %}{% endblock %}
+</head>
+<body>
+{% block content %}
+{% endblock %}
+<script src="{{ url_for('static', filename='bootstrap/bootstrap.bundle.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='toastr/toastr.min.js') }}"></script>
+{% block script %}{% endblock %}
+</body>
+</html>
